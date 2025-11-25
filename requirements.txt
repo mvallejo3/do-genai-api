@@ -1,0 +1,15 @@
+# Flask
+flask==3.0.0
+
+# Environment variables
+python-dotenv==1.0.0
+
+# Type hints
+typing-extensions==4.8.0
+
+# AWS SDK for DigitalOcean Spaces (S3-compatible)
+boto3==1.35.0
+botocore==1.35.0
+
+# DigitalOcean API
+pydo==0.21.0
