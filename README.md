@@ -17,7 +17,7 @@ All API endpoints require Bearer token authentication for security.
 
 ## Prerequisites
 
-- Python 3.9 or higher
+- Python 3.10 or higher
 - DigitalOcean account with GenAI access
 - DigitalOcean Spaces bucket (file storage to use for Knowledge bases)
 - DigitalOcean API token
