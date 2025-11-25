@@ -1,0 +1,396 @@
+{
+	"info": {
+		"_postman_id": "do-genai-api-collection",
+		"name": "DO GenAI API",
+		"description": "Postman collection for DigitalOcean GenAI API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{API_BEARER_TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{BASE_URL}}/",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Health check endpoint to verify the API is running"
+			},
+			"response": []
+		},
+		{
+			"name": "Files",
+			"item": [
+				{
+					"name": "List Files",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/files?prefix=&max_keys=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"files"
+							],
+							"query": [
+								{
+									"key": "prefix",
+									"value": "",
+									"description": "Prefix to filter objects by (e.g., folder path)",
+									"disabled": true
+								},
+								{
+									"key": "max_keys",
+									"value": "",
+									"description": "Maximum number of keys to return",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List files in the knowledge base bucket"
+					},
+					"response": []
+				},
+				{
+					"name": "Upload File",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": [],
+									"description": "One or more files to upload"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/files?folder=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"files"
+							],
+							"query": [
+								{
+									"key": "folder",
+									"value": "",
+									"description": "Folder/path prefix in the bucket",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Upload one or more files to the knowledge base bucket"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete File",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/files?key=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"files"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "",
+									"description": "The key/path of the file to delete in Spaces"
+								}
+							]
+						},
+						"description": "Delete a file from the knowledge base bucket"
+					},
+					"response": []
+				}
+			],
+			"description": "File management endpoints for DigitalOcean Spaces"
+		},
+		{
+			"name": "Knowledge Base",
+			"item": [
+				{
+					"name": "Re-index Knowledge Base",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"knowledge_base_uuid\": \"{{KNOWLEDGE_BASE_UUID}}\",\n    \"data_source_uuids\": []\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/knowledgebase/reindex",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"knowledgebase",
+								"reindex"
+							]
+						},
+						"description": "Trigger a re-indexing job for the knowledge base. Optionally specify data_source_uuids to re-index specific data sources."
+					},
+					"response": []
+				}
+			],
+			"description": "Knowledge base operations"
+		},
+		{
+			"name": "Agents",
+			"item": [
+				{
+					"name": "List Agents",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/agents",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"agents"
+							]
+						},
+						"description": "List all AI Agents saved in the database"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Agent",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/agents/{{AGENT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"{{AGENT_ID}}"
+							]
+						},
+						"description": "Get a specific AI Agent by ID from the database"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Agent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My AI Agent\",\n    \"description\": \"A helpful AI assistant\",\n    \"instructions\": \"You are a helpful assistant that answers questions accurately.\",\n    \"openaiModel\": \"{{MODEL_UUID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/agents",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"agents"
+							]
+						},
+						"description": "Create a new AI Agent and save it to the database"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Agent",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/agents/{{AGENT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"{{AGENT_ID}}"
+							]
+						},
+						"description": "Delete an AI Agent by ID"
+					},
+					"response": []
+				}
+			],
+			"description": "AI Agent management endpoints"
+		},
+		{
+			"name": "Models",
+			"item": [
+				{
+					"name": "List Models",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/models?usecases=&public_only=true",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"models"
+							],
+							"query": [
+								{
+									"key": "usecases",
+									"value": "",
+									"description": "Comma-separated list of use cases to filter by (e.g., chat,completion)",
+									"disabled": true
+								},
+								{
+									"key": "public_only",
+									"value": "true",
+									"description": "Whether to show only public models",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List available models from DigitalOcean GenAI"
+					},
+					"response": []
+				}
+			],
+			"description": "Model discovery endpoints"
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "API_BEARER_TOKEN",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "AGENT_ID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "MODEL_UUID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "KNOWLEDGE_BASE_UUID",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+
