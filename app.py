@@ -362,6 +362,59 @@ def create_app() -> Flask:
         
         return agent
     
+    @app.route('/api/agents/<id>/api-keys', methods=['GET'])
+    @handle_response
+    def list_agent_api_keys(id):
+        """
+        List API keys for a specific AI Agent.
+        
+        Path parameters:
+            id (str, required): The ID/UUID of the agent
+        
+        Returns:
+            JSON response with list of API keys for the agent
+        """
+        if not id or not isinstance(id, str) or not id.strip():
+            raise ValueError("Agent ID cannot be empty")
+        
+        do_genai = DigitalOceanGenAI()
+        api_keys = do_genai.list_agent_api_keys(agent_uuid=id)
+        
+        return api_keys
+    
+    @app.route('/api/agents/<id>/api-keys', methods=['POST'])
+    @handle_response
+    def create_agent_api_key(id):
+        """
+        Create a new API key for a specific AI Agent.
+        
+        Path parameters:
+            id (str, required): The ID/UUID of the agent
+        
+        Request body (JSON):
+            name (str, required): Name for the API key
+        
+        Returns:
+            JSON response with the created API key details (including the key itself)
+        """
+        if not id or not isinstance(id, str) or not id.strip():
+            raise ValueError("Agent ID cannot be empty")
+        
+        data = request.get_json()
+        
+        if not data:
+            raise ValueError("Request body must be provided")
+        
+        name = data.get('name')
+        
+        if not name or not isinstance(name, str) or not name.strip():
+            raise ValueError("API key name is required and cannot be empty")
+        
+        do_genai = DigitalOceanGenAI()
+        api_key = do_genai.create_agent_api_key(agent_uuid=id, name=name)
+        
+        return api_key
+    
     @app.route('/api/agents', methods=['GET'])
     @handle_response
     def list_agents():
