@@ -10,6 +10,7 @@ from typing import MutableMapping  # type: ignore  # pylint: disable=ungrouped-i
 JSON = MutableMapping[str, Any]
 
 DEFAULT_MODEL_UUID = os.getenv('DEFAULT_MODEL_UUID', '')
+DEFAULT_PROJECT_UUID = os.getenv('DEFAULT_PROJECT_UUID', '')
 DEFAULT_WORKSPACE_UUID = os.getenv('DEFAULT_WORKSPACE_UUID', '')
 DEFAULT_REGION = os.getenv('DEFAULT_REGION', os.getenv('SPACES_REGION', 'tor1'))
 
@@ -146,6 +147,7 @@ class DigitalOceanGenAI:
         region: str = DEFAULT_REGION,
         description: Optional[str] = None,
         instructions: Optional[str] = None,
+        project_id: Optional[str] = DEFAULT_PROJECT_UUID,
         **kwargs
     ) -> JSON:
         """
@@ -171,7 +173,7 @@ class DigitalOceanGenAI:
             "model_uuid": model_uuid,
             "workspace_uuid": workspace_uuid,
             "region": region,
-            "project_id": "042e8d63-a35d-4e43-8370-75bc54d31a8a"
+            "project_id": project_id
         }
         
         if description:
@@ -969,7 +971,7 @@ class DigitalOceanGenAI:
     
     def list_models(
         self,
-        usecases: Optional[List[str]] = None,
+        usecases: Optional[List[str]] = [],
         public_only: bool = True
     ) -> JSON:
         """

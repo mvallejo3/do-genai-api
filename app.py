@@ -360,9 +360,7 @@ def create_app() -> Flask:
         if not agent:
             raise ValueError(f"Agent with ID '{id}' not found")
         
-        return {
-            'agent': agent
-        }
+        return agent
     
     @app.route('/api/agents', methods=['GET'])
     @handle_response
@@ -375,10 +373,7 @@ def create_app() -> Flask:
         """
         do_genai = DigitalOceanGenAI()
         agents = do_genai.list_agents()
-        return {
-            'agents': agents,
-            'count': len(agents)
-        }
+        return agents
     
     @app.route('/api/agents', methods=['POST'])
     @handle_response
@@ -388,12 +383,12 @@ def create_app() -> Flask:
         
         Request body (JSON):
             name (str, required): Name of the agent
-            agentType (str, required): Type of the agent (custom, default)
             description (str, optional): Description of the agent
             instructions (str, optional): Instructions for the agent
-            openaiApiUrl (str, optional): OpenAI API URL
-            openaiApiKey (str, optional): OpenAI API key
-            openaiModel (str, optional): OpenAI model name
+            model (str, optional): Model UUID
+            workspace (str, optional): Workspace UUID
+            region (str, optional): Region
+            project_id (str, optional): Project ID
         
         Returns:
             JSON response with the created agent's ID and details
@@ -407,7 +402,10 @@ def create_app() -> Flask:
         name = data.get('name')
         description = data.get('description', '')
         instructions = data.get('instructions')
-        openai_model = data.get('openaiModel')
+        model = data.get('model')
+        workspace = data.get('workspace')
+        region = data.get('region')
+        project_id = data.get('project_id')
         
         # Validate required field
         if not name or not isinstance(name, str) or not name.strip():
@@ -424,18 +422,16 @@ def create_app() -> Flask:
                 name=name,
                 description=description,
                 instructions=instructions,
-                model_uuid=openai_model
+                # model_uuid=model,
+                # workspace_uuid=workspace,
+                # region=region,
+                # project_id=project_id
             )
 
             if not do_agent_response:
                 raise RuntimeError("Failed to create agent in DigitalOcean - no response received")
             
-            # Extract agent details from response
-            if isinstance(do_agent_response, dict):
-                if 'agent' in do_agent_response and isinstance(do_agent_response['agent'], dict):
-                    do_agent = do_agent_response['agent']
-                elif 'uuid' in do_agent_response:
-                    do_agent = do_agent_response
+            return do_agent_response
 
         except Exception as e:
             # Log the error but don't fail the request - so we can still create the agent in the database
@@ -447,17 +443,11 @@ def create_app() -> Flask:
                 error_msg += f" - Details: {details}"
             if code:
                 error_msg += f" - Code: {code}"
-            
-            do_error = error_msg
-            print(f"Warning: Failed to create agent in DigitalOcean: {do_error}")
-            # Don't raise - allow the request to succeed with just the database agent
-        
-        response_data = {
-            'message': 'Agent created successfully',
-            'agentId': do_agent['uuid'] if do_agent else None,
-            'agent': do_agent
-        }
-        return response_data
+            response_data = {
+                'message': 'Agent creation failed',
+                'error': error_msg
+            }
+            return response_data
     
     @app.route('/api/agents/<id>', methods=['DELETE'])
     @handle_response
@@ -465,23 +455,14 @@ def create_app() -> Flask:
         if not id or not isinstance(id, str) or not id.strip():
             raise ValueError("Agent ID cannot be empty")
         
-        # Grab agent from digital ocean
         do_genai = DigitalOceanGenAI()
         agent = do_genai.get_agent(id)
         
-        if not agent:
+        if not agent and not agent['agent']:
             raise ValueError(f"Agent with ID '{id}' not found")
-        
-        try:
-            do_genai = DigitalOceanGenAI()
-            do_genai.delete_agent(agent['uuid'])
-        except Exception as e:
-            print(f"Warning: Failed to delete DigitalOcean agent: {str(e)}")
-        
-        return {
-            'message': 'Agent deleted successfully',
-            'agentId': id,
-        }
+        print(f"Deleting agent with UUID: {agent['agent']['uuid']}")
+        response = do_genai.delete_agent(agent['agent']['uuid'])
+        return response
 
     @app.route('/api/models', methods=['GET'])
     @handle_response
@@ -498,24 +479,18 @@ def create_app() -> Flask:
         """
         # Parse usecases query parameter (comma-separated string)
         usecases_param = request.args.get('usecases')
-        usecases = None
+        usecases = ['MODEL_USECASE_AGENT']
         if usecases_param:
             usecases = [uc.strip() for uc in usecases_param.split(',') if uc.strip()]
         
         # Parse public_only query parameter (defaults to True)
-        public_only_param = request.args.get('public_only', 'true')
+        public_only_param = request.args.get('public_only', 'false')
         public_only = public_only_param.lower() in ('true', '1', 'yes')
         
         do_genai = DigitalOceanGenAI()
         result = do_genai.list_models(usecases=usecases, public_only=public_only)
-        
-        # Extract models from the response
-        models = result.get('models', []) if isinstance(result, dict) else result
-        
-        return {
-            'models': models,
-            'count': len(models) if isinstance(models, list) else 0
-        }
+
+        return result
     
     return app
 
