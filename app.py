@@ -295,6 +295,43 @@ def create_app() -> Flask:
             'key': key
         }
     
+    @app.route('/api/knowledgebase', methods=['POST'])
+    @handle_response
+    def create_knowledge_base():
+        """
+        Create a new knowledge base.
+        
+        Request body (JSON):
+            name (str, required): Name of the knowledge base
+            description (str, optional): Description of the knowledge base
+        
+        Returns:
+            JSON response with the created knowledge base details
+        """
+        data = request.get_json()
+        
+        if not data:
+            raise ValueError("Request body must be provided")
+        
+        name = data.get('name')
+        description = data.get('description', '')
+        
+        # Validate required field
+        if not name or not isinstance(name, str) or not name.strip():
+            raise ValueError("Knowledge base name is required and cannot be empty")
+        
+        do_genai = DigitalOceanGenAI()
+        result = do_genai.create_knowledge_base(
+            name=name,
+            description=description if description else ''
+            # Set default embedding model
+        )
+        
+        if not result:
+            raise RuntimeError("Failed to create knowledge base in DigitalOcean - no response received")
+        
+        return result
+    
     @app.route('/api/knowledgebase/reindex', methods=['POST'])
     @handle_response
     def reindex_knowledgebase():

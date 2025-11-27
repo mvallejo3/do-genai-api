@@ -679,10 +679,27 @@ class DigitalOceanGenAI:
         Returns:
             Dictionary containing knowledge base details
         """
-        body = {"name": name}
+        body = {
+            "name": name,
+            "project_id": DEFAULT_PROJECT_UUID,
+            "embedding_model_uuid": "22652c2a-79ed-11ef-bf8f-4e013e2ddde4",
+            "database_id": "eb400988-68af-4ad6-ad15-ab91b7e85625",
+            "datasources": [{
+                "spaces_data_source": {
+                    "bucket_name": 'roami-bot',
+                    # "item_path": '',
+                    "region": DEFAULT_REGION
+                }
+            }]
+        }
         if description:
             body["description"] = description
         
+        # if "embedding_model_uuid" in kwargs:
+        #     body["embedding_model_uuid"] = kwargs["embedding_model_uuid"]
+        # else:
+        #     body["embedding_model_uuid"] = "22652c2a-79ed-11ef-bf8f-4e013e2ddde4"
+
         body.update(kwargs)
         
         response = self.client.genai.create_knowledge_base(body=body)
