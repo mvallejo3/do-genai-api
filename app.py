@@ -584,6 +584,66 @@ def create_app() -> Flask:
             'message': 'Bucket created successfully',
         }
     
+    @app.route('/api/buckets', methods=['GET'])
+    @handle_response
+    def list_buckets():
+        """
+        List all buckets in DigitalOcean Spaces.
+        
+        Returns:
+            JSON response with list of all buckets and their metadata
+        """
+        spaces = Spaces()
+        buckets = spaces.list_buckets()
+        
+        return buckets
+    
+    @app.route('/api/buckets/<name>', methods=['GET'])
+    @handle_response
+    def get_bucket(name):
+        """
+        Get information about a specific bucket in DigitalOcean Spaces.
+        
+        Path parameters:
+            name (str, required): Name of the bucket to get information for
+        
+        Returns:
+            JSON response with bucket information
+        """
+        if not name or not isinstance(name, str) or not name.strip():
+            raise ValueError("Bucket name cannot be empty")
+        
+        spaces = Spaces()
+        bucket_info = spaces.get_bucket_info(bucket_name=name)
+        
+        return bucket_info
+    
+    @app.route('/api/buckets/<name>', methods=['DELETE'])
+    @handle_response
+    def delete_bucket(name):
+        """
+        Delete a bucket from DigitalOcean Spaces.
+        
+        Path parameters:
+            name (str, required): Name of the bucket to delete
+        
+        Returns:
+            JSON response confirming bucket deletion
+        
+        Note:
+            The bucket must be empty before it can be deleted.
+        """
+        if not name or not isinstance(name, str) or not name.strip():
+            raise ValueError("Bucket name cannot be empty")
+        
+        spaces = Spaces()
+        spaces.delete_bucket(bucket_name=name)
+        
+        return {
+            'message': 'Bucket deleted successfully',
+            'bucket_name': name
+        }
+    
     return app
 
 

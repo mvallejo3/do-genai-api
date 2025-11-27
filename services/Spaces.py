@@ -375,3 +375,129 @@ class Spaces:
                 raise RuntimeError(f"Bucket '{bucket_name}' is already owned by you")
             else:
                 raise RuntimeError(f"Failed to create bucket '{bucket_name}': {str(e)}")
+    
+    def delete_bucket(self, bucket_name: str) -> bool:
+        """
+        Delete a bucket from DigitalOcean Spaces.
+        
+        Args:
+            bucket_name: Name of the bucket to delete
+        
+        Returns:
+            True if bucket deletion was successful
+        
+        Raises:
+            RuntimeError: If the bucket deletion fails
+            ValueError: If bucket name is invalid
+        """
+        if not bucket_name:
+            raise ValueError("Bucket name cannot be empty")
+        
+        try:
+            # Delete bucket (must be empty first)
+            self.client.delete_bucket(Bucket=bucket_name)
+            return True
+            
+        except ClientError as e:
+            error_code = e.response.get('Error', {}).get('Code', '')
+            if error_code == 'NoSuchBucket':
+                raise RuntimeError(f"Bucket '{bucket_name}' does not exist")
+            elif error_code == 'BucketNotEmpty':
+                raise RuntimeError(f"Bucket '{bucket_name}' is not empty. Delete all objects first.")
+            else:
+                raise RuntimeError(f"Failed to delete bucket '{bucket_name}': {str(e)}")
+    
+    def get_bucket_info(self, bucket_name: str) -> Dict[str, Any]:
+        """
+        Get information about a bucket in DigitalOcean Spaces.
+        
+        Args:
+            bucket_name: Name of the bucket to get information for
+        
+        Returns:
+            Dictionary containing bucket information:
+            - Name: Bucket name
+            - CreationDate: When the bucket was created
+            - Location: Region where the bucket is located
+        
+        Raises:
+            RuntimeError: If the bucket information retrieval fails
+            ValueError: If bucket name is invalid
+        """
+        if not bucket_name:
+            raise ValueError("Bucket name cannot be empty")
+        
+        try:
+            # Get bucket location
+            location_response = self.client.get_bucket_location(Bucket=bucket_name)
+            
+            # Get bucket ACL (access control list)
+            try:
+                acl_response = self.client.get_bucket_acl(Bucket=bucket_name)
+                owner = acl_response.get('Owner', {})
+            except ClientError:
+                owner = {}
+            
+            # Try to get bucket creation date by listing objects
+            # Note: S3/Spaces doesn't provide creation date directly, so we'll use the first object's date
+            # or return None if bucket is empty
+            creation_date = None
+            try:
+                objects = self.client.list_objects_v2(Bucket=bucket_name, MaxKeys=1)
+                if 'Contents' in objects and len(objects['Contents']) > 0:
+                    creation_date = objects['Contents'][0]['LastModified']
+            except ClientError:
+                pass
+            
+            return {
+                'Name': bucket_name,
+                'Location': location_response.get('LocationConstraint', self.region),
+                'CreationDate': creation_date,
+                'Owner': owner
+            }
+            
+        except ClientError as e:
+            error_code = e.response.get('Error', {}).get('Code', '')
+            if error_code == 'NoSuchBucket':
+                raise RuntimeError(f"Bucket '{bucket_name}' does not exist")
+            else:
+                raise RuntimeError(f"Failed to get bucket information for '{bucket_name}': {str(e)}")
+    
+    def list_buckets(self) -> List[Dict[str, Any]]:
+        """
+        List all buckets in DigitalOcean Spaces.
+        
+        Returns:
+            List of dictionaries containing bucket information:
+            - Name: Bucket name
+            - CreationDate: When the bucket was created
+            - Location: Region where the bucket is located
+        
+        Raises:
+            RuntimeError: If the bucket listing fails
+        """
+        try:
+            response = self.client.list_buckets()
+            # buckets = []
+            
+            # for bucket in response.get('Buckets', []):
+            #     bucket_name = bucket['Name']
+            #     # Get location for each bucket
+            #     try:
+            #         # Create a temporary client to get bucket location
+            #         # Note: We need to check each bucket's location
+            #         location_response = self.client.get_bucket_location(Bucket=bucket_name)
+            #         location = location_response.get('LocationConstraint', 'unknown')
+            #     except ClientError:
+            #         location = 'unknown'
+                
+            #     buckets.append({
+            #         'Name': bucket_name,
+            #         'CreationDate': bucket.get('CreationDate'),
+            #         'Location': location
+            #     })
+            
+            return response
+            
+        except ClientError as e:
+            raise RuntimeError(f"Failed to list buckets: {str(e)}")

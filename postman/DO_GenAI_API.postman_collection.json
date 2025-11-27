@@ -473,6 +473,83 @@
 						"description": "Create a new bucket in DigitalOcean Spaces. The bucket name must be globally unique. Region is optional and defaults to SPACES_REGION env var or 'tor1'."
 					},
 					"response": []
+				},
+				{
+					"name": "List Buckets",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/buckets",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"buckets"
+							]
+						},
+						"description": "List all buckets in DigitalOcean Spaces"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bucket",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/buckets/{{BUCKET_NAME}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"buckets",
+								"{{BUCKET_NAME}}"
+							]
+						},
+						"description": "Get information about a specific bucket in DigitalOcean Spaces"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Bucket",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/buckets/{{BUCKET_NAME}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"buckets",
+								"{{BUCKET_NAME}}"
+							]
+						},
+						"description": "Delete a bucket from DigitalOcean Spaces. The bucket must be empty before it can be deleted."
+					},
+					"response": []
 				}
 			],
 			"description": "DigitalOcean Spaces bucket management endpoints"
@@ -501,6 +578,11 @@
 		},
 		{
 			"key": "KNOWLEDGE_BASE_UUID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "BUCKET_NAME",
 			"value": "",
 			"type": "string"
 		}
