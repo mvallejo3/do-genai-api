@@ -269,7 +269,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"My AI Agent\",\n    \"description\": \"A helpful AI assistant\",\n    \"instructions\": \"You are a helpful assistant that answers questions accurately.\",\n    \"openaiModel\": \"{{MODEL_UUID}}\"\n}",
+							"raw": "{\n    \"name\": \"My AI Agent\",\n    \"description\": \"A helpful AI assistant\",\n    \"instructions\": \"You are a helpful assistant that answers questions accurately.\",\n    \"model\": \"{{MODEL_UUID}}\",\n    \"workspace\": \"\",\n    \"region\": \"\",\n    \"project_id\": \"\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -313,6 +313,74 @@
 							]
 						},
 						"description": "Delete an AI Agent by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "List Agent API Keys",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/agents/{{AGENT_ID}}/api-keys",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"{{AGENT_ID}}",
+								"api-keys"
+							]
+						},
+						"description": "List API keys for a specific AI Agent"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Agent API Key",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My API Key\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/agents/{{AGENT_ID}}/api-keys",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"{{AGENT_ID}}",
+								"api-keys"
+							]
+						},
+						"description": "Create a new API key for a specific AI Agent"
 					},
 					"response": []
 				}
@@ -363,6 +431,51 @@
 				}
 			],
 			"description": "Model discovery endpoints"
+		},
+		{
+			"name": "Buckets",
+			"item": [
+				{
+					"name": "Create Bucket",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"my-new-bucket\",\n    \"region\": \"nyc3\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/buckets",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"buckets"
+							]
+						},
+						"description": "Create a new bucket in DigitalOcean Spaces. The bucket name must be globally unique. Region is optional and defaults to SPACES_REGION env var or 'tor1'."
+					},
+					"response": []
+				}
+			],
+			"description": "DigitalOcean Spaces bucket management endpoints"
 		}
 	],
 	"variable": [
