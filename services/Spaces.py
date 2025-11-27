@@ -328,3 +328,50 @@ class Spaces:
                     })
         
         return results
+    
+    def create_bucket(
+        self,
+        bucket_name: str,
+        region: Optional[str] = None,
+        acl: str = 'private'
+    ) -> bool:
+        """
+        Create a new bucket in DigitalOcean Spaces.
+        
+        Args:
+            bucket_name: Name of the bucket to create (must be globally unique)
+            region: DigitalOcean region for the bucket. If None, uses self.region
+            acl: Access control level ('private', 'public-read', etc.)
+        
+        Returns:
+            True if bucket creation was successful
+        
+        Raises:
+            RuntimeError: If the bucket creation fails
+            ValueError: If bucket name is invalid
+        """
+        if not bucket_name:
+            raise ValueError("Bucket name cannot be empty")
+        
+        try:
+            # Create bucket
+            # Note: The bucket will be created in the region specified by the client's endpoint URL
+            # If a different region is needed, create a new Spaces instance with that region
+            confirmation = self.client.create_bucket(
+                Bucket=bucket_name,
+                ACL=acl,
+                CreateBucketConfiguration={
+                    'LocationConstraint': region if region else self.region
+                }
+            )
+            
+            return confirmation
+            
+        except ClientError as e:
+            error_code = e.response.get('Error', {}).get('Code', '')
+            if error_code == 'BucketAlreadyExists':
+                raise RuntimeError(f"Bucket '{bucket_name}' already exists")
+            elif error_code == 'BucketAlreadyOwnedByYou':
+                raise RuntimeError(f"Bucket '{bucket_name}' is already owned by you")
+            else:
+                raise RuntimeError(f"Failed to create bucket '{bucket_name}': {str(e)}")

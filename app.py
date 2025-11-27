@@ -545,6 +545,45 @@ def create_app() -> Flask:
 
         return result
     
+    @app.route('/api/buckets', methods=['POST'])
+    @handle_response
+    def create_bucket():
+        """
+        Create a new bucket in DigitalOcean Spaces.
+        
+        Request body (JSON):
+            name (str, required): Name of the bucket to create (must be globally unique)
+            region (str, optional): DigitalOcean region for the bucket (defaults to SPACES_REGION env var or 'tor1')
+        
+        Returns:
+            JSON response confirming bucket creation
+        """
+        data = request.get_json()
+        
+        if not data:
+            raise ValueError("Request body must be provided")
+        
+        name = data.get('name')
+        region = data.get('region')
+        
+        # Validate required field
+        if not name or not isinstance(name, str) or not name.strip():
+            raise ValueError("Bucket name is required and cannot be empty")
+        
+        # Create Spaces instance with the specified region (or use default)
+        # The bucket will be created in the region specified by the Spaces client's endpoint URL
+        spaces = Spaces(region=region) if region else Spaces()
+        
+        # Create the bucket (region is determined by the Spaces client's endpoint URL)
+        confirmation = spaces.create_bucket(bucket_name=name, region=region)
+
+        if not confirmation:
+            raise RuntimeError("Failed to create bucket in DigitalOcean Spaces - no response received")
+        
+        return {
+            'message': 'Bucket created successfully',
+        }
+    
     return app
 
 
