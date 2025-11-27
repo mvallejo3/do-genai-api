@@ -295,6 +295,19 @@ def create_app() -> Flask:
             'key': key
         }
     
+    @app.route('/api/knowledgebase', methods=['GET'])
+    @handle_response
+    def list_knowledge_bases():
+        """
+        List all knowledge bases.
+        
+        Returns:
+            JSON response with a list of all knowledge bases
+        """
+        do_genai = DigitalOceanGenAI()
+        knowledge_bases = do_genai.list_knowledge_bases()
+        return knowledge_bases
+    
     @app.route('/api/knowledgebase', methods=['POST'])
     @handle_response
     def create_knowledge_base():
@@ -323,14 +336,36 @@ def create_app() -> Flask:
         do_genai = DigitalOceanGenAI()
         result = do_genai.create_knowledge_base(
             name=name,
-            description=description if description else ''
-            # Set default embedding model
+            description=description if description else None
         )
         
         if not result:
             raise RuntimeError("Failed to create knowledge base in DigitalOcean - no response received")
         
         return result
+    
+    @app.route('/api/knowledgebase/<id>', methods=['GET'])
+    @handle_response
+    def get_knowledge_base(id):
+        """
+        Get a specific knowledge base by ID from DigitalOcean.
+        
+        Path parameters:
+            id (str, required): The ID/UUID of the knowledge base to retrieve
+        
+        Returns:
+            JSON response with knowledge base details
+        """
+        if not id or not isinstance(id, str) or not id.strip():
+            raise ValueError("Knowledge base ID cannot be empty")
+        
+        do_genai = DigitalOceanGenAI()
+        knowledge_base = do_genai.get_knowledge_base(id)
+        
+        if not knowledge_base:
+            raise ValueError(f"Knowledge base with ID '{id}' not found")
+        
+        return knowledge_base
     
     @app.route('/api/knowledgebase/reindex', methods=['POST'])
     @handle_response
