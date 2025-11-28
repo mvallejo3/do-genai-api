@@ -367,6 +367,31 @@ def create_app() -> Flask:
         
         return knowledge_base
     
+    @app.route('/api/knowledgebase/<id>', methods=['DELETE'])
+    @handle_response
+    def delete_knowledge_base(id):
+        """
+        Delete a knowledge base from DigitalOcean.
+        
+        Path parameters:
+            id (str, required): The ID/UUID of the knowledge base to delete
+        
+        Returns:
+            JSON response confirming knowledge base deletion
+        """
+        if not id or not isinstance(id, str) or not id.strip():
+            raise ValueError("Knowledge base ID cannot be empty")
+        
+        do_genai = DigitalOceanGenAI()
+        # Verify knowledge base exists before deleting
+        knowledge_base = do_genai.get_knowledge_base(id)
+        
+        if not knowledge_base:
+            raise ValueError(f"Knowledge base with ID '{id}' not found")
+        
+        response = do_genai.delete_knowledge_base(id)
+        return response
+    
     @app.route('/api/knowledgebase/reindex', methods=['POST'])
     @handle_response
     def reindex_knowledgebase():
