@@ -3,7 +3,7 @@ DigitalOcean GenAI service for managing agents, knowledge bases, models, and wor
 """
 
 import os
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Any
 from pydo import Client
 
 from typing import MutableMapping  # type: ignore  # pylint: disable=ungrouped-imports
