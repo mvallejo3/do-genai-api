@@ -4,7 +4,14 @@ Main application entry point for DO GenAI API.
 import os
 import tempfile
 from pathlib import Path
-from services.do_genai import DigitalOceanGenAI
+from services.do_api import (
+    Agents,
+    KnowledgeBases,
+    Models,
+    APIKeys,
+    IndexingJobs,
+    Databases
+)
 # from typing import Any
 
 # Add the project root to Python path so imports work correctly
@@ -304,8 +311,8 @@ def create_app() -> Flask:
         Returns:
             JSON response with a list of all knowledge bases
         """
-        do_genai = DigitalOceanGenAI()
-        knowledge_bases = do_genai.list_knowledge_bases()
+        kb_service = KnowledgeBases()
+        knowledge_bases = kb_service.list_knowledge_bases()
         return knowledge_bases
     
     @app.route('/api/knowledgebase', methods=['POST'])
@@ -333,8 +340,8 @@ def create_app() -> Flask:
         if not name or not isinstance(name, str) or not name.strip():
             raise ValueError("Knowledge base name is required and cannot be empty")
         
-        do_genai = DigitalOceanGenAI()
-        result = do_genai.create_knowledge_base(
+        kb_service = KnowledgeBases()
+        result = kb_service.create_knowledge_base(
             name=name,
             description=description if description else None
         )
@@ -359,8 +366,8 @@ def create_app() -> Flask:
         if not id or not isinstance(id, str) or not id.strip():
             raise ValueError("Knowledge base ID cannot be empty")
         
-        do_genai = DigitalOceanGenAI()
-        knowledge_base = do_genai.get_knowledge_base(id)
+        kb_service = KnowledgeBases()
+        knowledge_base = kb_service.get_knowledge_base(id)
         
         if not knowledge_base:
             raise ValueError(f"Knowledge base with ID '{id}' not found")
@@ -382,14 +389,14 @@ def create_app() -> Flask:
         if not id or not isinstance(id, str) or not id.strip():
             raise ValueError("Knowledge base ID cannot be empty")
         
-        do_genai = DigitalOceanGenAI()
+        kb_service = KnowledgeBases()
         # Verify knowledge base exists before deleting
-        knowledge_base = do_genai.get_knowledge_base(id)
+        knowledge_base = kb_service.get_knowledge_base(id)
         
         if not knowledge_base:
             raise ValueError(f"Knowledge base with ID '{id}' not found")
         
-        response = do_genai.delete_knowledge_base(id)
+        response = kb_service.delete_knowledge_base(id)
         return response
     
     @app.route('/api/knowledgebase/reindex', methods=['POST'])
@@ -424,8 +431,8 @@ def create_app() -> Flask:
             if not all(isinstance(uuid, str) and uuid.strip() for uuid in data_source_uuids):
                 raise ValueError("All items in data_source_uuids must be non-empty strings")
         
-        do_genai = DigitalOceanGenAI()
-        result = do_genai.create_indexing_job(
+        indexing_service = IndexingJobs()
+        result = indexing_service.create_indexing_job(
             knowledge_base_uuid=knowledge_base_uuid,
             data_source_uuids=data_source_uuids
         )
@@ -451,8 +458,8 @@ def create_app() -> Flask:
             raise ValueError("Agent ID cannot be empty")
         
         # Grab agent from digital ocean
-        do_genai = DigitalOceanGenAI()
-        agent = do_genai.get_agent(id)
+        agents_service = Agents()
+        agent = agents_service.get_agent(id)
         
         if not agent:
             raise ValueError(f"Agent with ID '{id}' not found")
@@ -474,8 +481,8 @@ def create_app() -> Flask:
         if not id or not isinstance(id, str) or not id.strip():
             raise ValueError("Agent ID cannot be empty")
         
-        do_genai = DigitalOceanGenAI()
-        api_keys = do_genai.list_agent_api_keys(agent_uuid=id)
+        api_keys_service = APIKeys()
+        api_keys = api_keys_service.list_agent_api_keys(agent_uuid=id)
         
         return api_keys
     
@@ -507,8 +514,8 @@ def create_app() -> Flask:
         if not name or not isinstance(name, str) or not name.strip():
             raise ValueError("API key name is required and cannot be empty")
         
-        do_genai = DigitalOceanGenAI()
-        api_key = do_genai.create_agent_api_key(agent_uuid=id, name=name)
+        api_keys_service = APIKeys()
+        api_key = api_keys_service.create_agent_api_key(agent_uuid=id, name=name)
         
         return api_key
     
@@ -521,8 +528,8 @@ def create_app() -> Flask:
         Returns:
             JSON response with a list of all agents
         """
-        do_genai = DigitalOceanGenAI()
-        agents = do_genai.list_agents()
+        agents_service = Agents()
+        agents = agents_service.list_agents()
         return agents
     
     @app.route('/api/agents', methods=['POST'])
@@ -566,7 +573,7 @@ def create_app() -> Flask:
         # Create the agent in DigitalOcean (optional - don't fail if this fails)
         try:
             # Creat a new agent in DigitalOcean
-            do_genai = DigitalOceanGenAI()
+            agents_service = Agents()
             
             # Build optional parameters dict only with values that exist
             optional_params = {}
@@ -579,7 +586,7 @@ def create_app() -> Flask:
             if project_id:
                 optional_params['project_id'] = project_id
             
-            do_agent_response = do_genai.create_agent(
+            do_agent_response = agents_service.create_agent(
                 name=name,
                 description=description,
                 instructions=instructions,
@@ -613,13 +620,13 @@ def create_app() -> Flask:
         if not id or not isinstance(id, str) or not id.strip():
             raise ValueError("Agent ID cannot be empty")
         
-        do_genai = DigitalOceanGenAI()
-        agent = do_genai.get_agent(id)
+        agents_service = Agents()
+        agent = agents_service.get_agent(id)
         
         if not agent and not agent['agent']:
             raise ValueError(f"Agent with ID '{id}' not found")
         print(f"Deleting agent with UUID: {agent['agent']['uuid']}")
-        response = do_genai.delete_agent(agent['agent']['uuid'])
+        response = agents_service.delete_agent(agent['agent']['uuid'])
         return response
     
     @app.route('/api/agents/<id>/attach-knowledgebase', methods=['POST'])
@@ -651,20 +658,21 @@ def create_app() -> Flask:
             raise ValueError("knowledge_base_uuid is required and cannot be empty")
         
         # Verify agent exists
-        do_genai = DigitalOceanGenAI()
-        agent = do_genai.get_agent(id)
+        agents_service = Agents()
+        agent = agents_service.get_agent(id)
         
         if not agent:
             raise ValueError(f"Agent with ID '{id}' not found")
         
         # Verify knowledge base exists
-        knowledge_base = do_genai.get_knowledge_base(knowledge_base_uuid)
+        kb_service = KnowledgeBases()
+        knowledge_base = kb_service.get_knowledge_base(knowledge_base_uuid)
         
         if not knowledge_base:
             raise ValueError(f"Knowledge base with ID '{knowledge_base_uuid}' not found")
         
         # Attach knowledge base to agent
-        result = do_genai.attach_knowledge_base(
+        result = agents_service.attach_knowledge_base(
             agent_uuid=id,
             knowledge_base_uuid=knowledge_base_uuid
         )
@@ -699,8 +707,8 @@ def create_app() -> Flask:
         public_only_param = request.args.get('public_only', 'false')
         public_only = public_only_param.lower() in ('true', '1', 'yes')
         
-        do_genai = DigitalOceanGenAI()
-        result = do_genai.list_models(usecases=usecases, public_only=public_only)
+        models_service = Models()
+        result = models_service.list_models(usecases=usecases, public_only=public_only)
 
         return result
     
@@ -713,8 +721,8 @@ def create_app() -> Flask:
         Returns:
             JSON response with list of all OpenSearch databases and their metadata
         """
-        do_genai = DigitalOceanGenAI()
-        databases = do_genai.list_opensearch_databases()
+        databases_service = Databases()
+        databases = databases_service.list_opensearch_databases()
         
         return databases
     
