@@ -564,18 +564,26 @@ def create_app() -> Flask:
             raise ValueError("Agent instructions are required and cannot be empty")
 
         # Create the agent in DigitalOcean (optional - don't fail if this fails)
-        do_agent = None
         try:
             # Creat a new agent in DigitalOcean
             do_genai = DigitalOceanGenAI()
+            
+            # Build optional parameters dict only with values that exist
+            optional_params = {}
+            if model:
+                optional_params['model_uuid'] = model
+            if workspace:
+                optional_params['workspace_uuid'] = workspace
+            if region:
+                optional_params['region'] = region
+            if project_id:
+                optional_params['project_id'] = project_id
+            
             do_agent_response = do_genai.create_agent(
                 name=name,
                 description=description,
                 instructions=instructions,
-                # model_uuid=model,
-                # workspace_uuid=workspace,
-                # region=region,
-                # project_id=project_id
+                **optional_params
             )
 
             if not do_agent_response:
@@ -613,6 +621,60 @@ def create_app() -> Flask:
         print(f"Deleting agent with UUID: {agent['agent']['uuid']}")
         response = do_genai.delete_agent(agent['agent']['uuid'])
         return response
+    
+    @app.route('/api/agents/<id>/attach-knowledgebase', methods=['POST'])
+    @handle_response
+    def attach_agent_knowledge_base(id):
+        """
+        Attach a knowledge base to an agent.
+        
+        Path parameters:
+            id (str, required): The ID/UUID of the agent
+        
+        Request body (JSON):
+            knowledge_base_uuid (str, required): UUID of the knowledge base to attach
+        
+        Returns:
+            JSON response confirming the knowledge base attachment
+        """
+        if not id or not isinstance(id, str) or not id.strip():
+            raise ValueError("Agent ID cannot be empty")
+        
+        data = request.get_json()
+        
+        if not data:
+            raise ValueError("Request body must be provided")
+        
+        knowledge_base_uuid = data.get('knowledge_base_uuid')
+        
+        if not knowledge_base_uuid or not isinstance(knowledge_base_uuid, str) or not knowledge_base_uuid.strip():
+            raise ValueError("knowledge_base_uuid is required and cannot be empty")
+        
+        # Verify agent exists
+        do_genai = DigitalOceanGenAI()
+        agent = do_genai.get_agent(id)
+        
+        if not agent:
+            raise ValueError(f"Agent with ID '{id}' not found")
+        
+        # Verify knowledge base exists
+        knowledge_base = do_genai.get_knowledge_base(knowledge_base_uuid)
+        
+        if not knowledge_base:
+            raise ValueError(f"Knowledge base with ID '{knowledge_base_uuid}' not found")
+        
+        # Attach knowledge base to agent
+        result = do_genai.attach_knowledge_base(
+            agent_uuid=id,
+            knowledge_base_uuid=knowledge_base_uuid
+        )
+        
+        return {
+            'message': 'Knowledge base attached to agent successfully',
+            'agent_id': id,
+            'knowledge_base_uuid': knowledge_base_uuid,
+            'result': result
+        }
 
     @app.route('/api/models', methods=['GET'])
     @handle_response
