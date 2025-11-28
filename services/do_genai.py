@@ -402,11 +402,9 @@ class DigitalOceanGenAI:
         Returns:
             Dictionary containing attachment result
         """
-        body = {"knowledge_base_uuid": knowledge_base_uuid}
         response = self.client.genai.attach_knowledge_base(
             agent_uuid=agent_uuid,
             knowledge_base_uuid=knowledge_base_uuid,
-            body=body
         )
         return response
     
