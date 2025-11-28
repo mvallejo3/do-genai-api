@@ -8,10 +8,12 @@ A Flask-based REST API that provides an interface to DigitalOcean's GenAI servic
 
 The DO GenAI API is a middleware service that simplifies interaction with DigitalOcean's GenAI platform. It provides RESTful endpoints for:
 
-- **Agent Management**: Create, list, retrieve, and delete AI agents
+- **Agent Management**: Create, list, retrieve, delete AI agents, manage API keys, and attach knowledge bases
 - **File Management**: Upload, list, and delete files in DigitalOcean Spaces (used for knowledge base storage)
-- **Knowledge Base Operations**: Trigger re-indexing jobs for knowledge bases
+- **Knowledge Base Operations**: Create, list, retrieve, delete knowledge bases, and trigger re-indexing jobs
 - **Model Discovery**: List available AI models from DigitalOcean GenAI
+- **Bucket Management**: Create, list, retrieve, and delete DigitalOcean Spaces buckets
+- **Database Management**: List OpenSearch databases from DigitalOcean
 
 All API endpoints require Bearer token authentication for security.
 
@@ -145,7 +147,50 @@ curl -X DELETE "http://localhost:8080/api/files?key=documents/file.pdf" \
   -H "Authorization: Bearer your-api-bearer-token"
 ```
 
-### Re-index Knowledge Base
+### Knowledge Base Management
+
+#### List Knowledge Bases
+
+Get all knowledge bases:
+
+```bash
+curl -X GET "http://localhost:8080/api/knowledgebase" \
+  -H "Authorization: Bearer your-api-bearer-token"
+```
+
+#### Create Knowledge Base
+
+Create a new knowledge base:
+
+```bash
+curl -X POST "http://localhost:8080/api/knowledgebase" \
+  -H "Authorization: Bearer your-api-bearer-token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Knowledge Base",
+    "description": "A knowledge base for my AI agent"
+  }'
+```
+
+#### Get Knowledge Base
+
+Retrieve a specific knowledge base by ID:
+
+```bash
+curl -X GET "http://localhost:8080/api/knowledgebase/your-knowledge-base-uuid" \
+  -H "Authorization: Bearer your-api-bearer-token"
+```
+
+#### Delete Knowledge Base
+
+Delete a knowledge base:
+
+```bash
+curl -X DELETE "http://localhost:8080/api/knowledgebase/your-knowledge-base-uuid" \
+  -H "Authorization: Bearer your-api-bearer-token"
+```
+
+#### Re-index Knowledge Base
 
 Trigger a re-indexing job for a knowledge base:
 
@@ -200,7 +245,10 @@ curl -X POST "http://localhost:8080/api/agents" \
     "name": "My AI Agent",
     "description": "A helpful AI assistant",
     "instructions": "You are a helpful assistant that answers questions accurately.",
-    "openaiModel": "your-model-uuid"
+    "model": "your-model-uuid",
+    "workspace": "your-workspace-uuid",
+    "region": "nyc1",
+    "project_id": "your-project-id"
   }'
 ```
 
@@ -211,6 +259,43 @@ Delete an agent:
 ```bash
 curl -X DELETE "http://localhost:8080/api/agents/your-agent-uuid" \
   -H "Authorization: Bearer your-api-bearer-token"
+```
+
+### Agent API Keys
+
+#### List Agent API Keys
+
+List all API keys for a specific agent:
+
+```bash
+curl -X GET "http://localhost:8080/api/agents/your-agent-uuid/api-keys" \
+  -H "Authorization: Bearer your-api-bearer-token"
+```
+
+#### Create Agent API Key
+
+Create a new API key for an agent:
+
+```bash
+curl -X POST "http://localhost:8080/api/agents/your-agent-uuid/api-keys" \
+  -H "Authorization: Bearer your-api-bearer-token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My API Key"
+  }'
+```
+
+### Attach Knowledge Base to Agent
+
+Attach a knowledge base to an agent:
+
+```bash
+curl -X POST "http://localhost:8080/api/agents/your-agent-uuid/attach-knowledgebase" \
+  -H "Authorization: Bearer your-api-bearer-token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "knowledge_base_uuid": "your-knowledge-base-uuid"
+  }'
 ```
 
 ### List Models
@@ -225,7 +310,59 @@ curl -X GET "http://localhost:8080/api/models" \
 Filter models by use cases:
 
 ```bash
-curl -X GET "http://localhost:8080/api/models?usecases=chat,completion&public_only=true" \
+curl -X GET "http://localhost:8080/api/models?usecases=MODEL_USECASE_AGENT&public_only=true" \
+  -H "Authorization: Bearer your-api-bearer-token"
+```
+
+### List OpenSearch Databases
+
+List all OpenSearch databases from DigitalOcean:
+
+```bash
+curl -X GET "http://localhost:8080/api/opensearch-databases" \
+  -H "Authorization: Bearer your-api-bearer-token"
+```
+
+### Bucket Management
+
+#### List Buckets
+
+List all buckets in DigitalOcean Spaces:
+
+```bash
+curl -X GET "http://localhost:8080/api/buckets" \
+  -H "Authorization: Bearer your-api-bearer-token"
+```
+
+#### Create Bucket
+
+Create a new bucket in DigitalOcean Spaces:
+
+```bash
+curl -X POST "http://localhost:8080/api/buckets" \
+  -H "Authorization: Bearer your-api-bearer-token" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-bucket-name",
+    "region": "nyc3"
+  }'
+```
+
+#### Get Bucket
+
+Get information about a specific bucket:
+
+```bash
+curl -X GET "http://localhost:8080/api/buckets/my-bucket-name" \
+  -H "Authorization: Bearer your-api-bearer-token"
+```
+
+#### Delete Bucket
+
+Delete a bucket (must be empty):
+
+```bash
+curl -X DELETE "http://localhost:8080/api/buckets/my-bucket-name" \
   -H "Authorization: Bearer your-api-bearer-token"
 ```
 
@@ -251,94 +388,51 @@ All API responses follow a standard format:
 }
 ```
 
-## Testing
-
-The project includes tests for the DigitalOcean GenAI service. Before running tests, ensure you have:
-
-1. **Activated the virtual environment**:
-
-   ```bash
-   source venv/bin/activate
-   ```
-
-2. **Set up your `.env` file** with the required environment variables (see [Setup](#setup) section).
-
-### Running Tests
-
-Run the test suite using Python:
-
-```bash
-python tests/test_do_genai.py
-```
-
-Or from the project root:
-
-```bash
-python -m tests.test_do_genai
-```
-
-### What the Tests Cover
-
-The test suite verifies:
-
-- Service initialization
-- Listing workspaces
-- Listing available models
-- Listing knowledge bases
-- Listing agents
-- Listing datacenter regions
-
-### Test Output
-
-The tests will display:
-
-- ✓ for passed tests
-- ✗ for failed tests
-- A summary at the end showing passed/failed counts
-
-**Example output:**
-
-```
-============================================================
-DigitalOcean GenAI Service Test
-============================================================
-Testing initialization...
-✓ Service initialized successfully
-
-Testing list_workspaces...
-✓ Successfully listed workspaces
-  Found 1 workspace(s)
-
-...
-
-============================================================
-Test Summary
-============================================================
-Passed: 5
-Failed: 0
-Total: 5
-
-✓ All tests passed!
-```
-
-**Note:** Tests require valid DigitalOcean API credentials and will make actual API calls to DigitalOcean's services.
-
 ## Project Structure
+
+The application follows a modular architecture using Flask Blueprints for better organization and maintainability:
 
 ```
 do-genai-api/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── scripts/
-│   ├── setup             # Setup script
-│   └── start             # Start script
-├── services/
+├── app.py                      # Main Flask application factory (registers blueprints)
+├── requirements.txt            # Python dependencies
+├── middleware/                 # Middleware and decorators
 │   ├── __init__.py
-│   ├── do_genai.py      # DigitalOcean GenAI service
-│   └── Spaces.py         # DigitalOcean Spaces service
-└── tests/
-    └── test_do_genai.py  # Test files
+│   ├── auth.py                 # Bearer token authentication middleware
+│   └── decorators.py           # Response handler decorator
+├── routes/                      # Flask blueprints (route handlers)
+│   ├── __init__.py
+│   ├── health.py               # Health check endpoint
+│   ├── files.py                # File management routes (/api/files)
+│   ├── knowledge_bases.py      # Knowledge base routes (/api/knowledgebase)
+│   ├── agents.py               # Agent routes (/api/agents)
+│   ├── models.py               # Model routes (/api/models)
+│   ├── databases.py            # Database routes (/api/opensearch-databases)
+│   └── buckets.py              # Bucket routes (/api/buckets)
+├── services/                   # Business logic and external API clients
+│   ├── __init__.py
+│   ├── do_api/                 # DigitalOcean GenAI API services
+│   │   ├── __init__.py
+│   │   ├── base.py             # Base API client
+│   │   ├── agents.py           # Agent service
+│   │   ├── api_keys.py         # API key service
+│   │   ├── knowledge_bases.py  # Knowledge base service
+│   │   ├── models.py           # Model service
+│   │   ├── indexing_jobs.py    # Indexing job service
+│   │   ├── databases.py        # Database service
+│   │   └── workspaces.py       # Workspace service
+│   └── Spaces.py               # DigitalOcean Spaces service
+└── scripts/
+    ├── setup                   # Setup script
+    └── start                   # Start script
 ```
+
+### Architecture Overview
+
+- **`app.py`**: Application factory that configures Flask, registers middleware, and registers all blueprints
+- **`middleware/`**: Shared middleware and decorators used across all routes
+- **`routes/`**: Flask blueprints organized by resource/domain (files, agents, knowledge bases, etc.)
+- **`services/`**: Business logic layer that interacts with DigitalOcean APIs
 
 ## Dependencies
 
