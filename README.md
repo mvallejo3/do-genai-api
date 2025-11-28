@@ -388,78 +388,6 @@ All API responses follow a standard format:
 }
 ```
 
-## Testing
-
-The project includes tests for the DigitalOcean GenAI service. Before running tests, ensure you have:
-
-1. **Activated the virtual environment**:
-
-   ```bash
-   source venv/bin/activate
-   ```
-
-2. **Set up your `.env` file** with the required environment variables (see [Setup](#setup) section).
-
-### Running Tests
-
-Run the test suite using Python:
-
-```bash
-python tests/test_do_genai.py
-```
-
-Or from the project root:
-
-```bash
-python -m tests.test_do_genai
-```
-
-### What the Tests Cover
-
-The test suite verifies:
-
-- Service initialization
-- Listing workspaces
-- Listing available models
-- Listing knowledge bases
-- Listing agents
-- Listing datacenter regions
-
-### Test Output
-
-The tests will display:
-
-- ✓ for passed tests
-- ✗ for failed tests
-- A summary at the end showing passed/failed counts
-
-**Example output:**
-
-```
-============================================================
-DigitalOcean GenAI Service Test
-============================================================
-Testing initialization...
-✓ Service initialized successfully
-
-Testing list_workspaces...
-✓ Successfully listed workspaces
-  Found 1 workspace(s)
-
-...
-
-============================================================
-Test Summary
-============================================================
-Passed: 5
-Failed: 0
-Total: 5
-
-✓ All tests passed!
-```
-
-**Note:** Tests require valid DigitalOcean API credentials and will make actual API calls to DigitalOcean's services.
-
 ## Project Structure
 
 The application follows a modular architecture using Flask Blueprints for better organization and maintainability:
@@ -493,13 +421,10 @@ do-genai-api/
 │   │   ├── indexing_jobs.py    # Indexing job service
 │   │   ├── databases.py        # Database service
 │   │   └── workspaces.py       # Workspace service
-│   ├── do_genai.py             # Legacy DigitalOcean GenAI service
 │   └── Spaces.py               # DigitalOcean Spaces service
-├── scripts/
-│   ├── setup                   # Setup script
-│   └── start                   # Start script
-└── tests/
-    └── test_do_genai.py        # Test files
+└── scripts/
+    ├── setup                   # Setup script
+    └── start                   # Start script
 ```
 
 ### Architecture Overview
