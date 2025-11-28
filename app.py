@@ -642,6 +642,20 @@ def create_app() -> Flask:
 
         return result
     
+    @app.route('/api/opensearch-databases', methods=['GET'])
+    @handle_response
+    def list_opensearch_databases():
+        """
+        List all OpenSearch databases from DigitalOcean.
+        
+        Returns:
+            JSON response with list of all OpenSearch databases and their metadata
+        """
+        do_genai = DigitalOceanGenAI()
+        databases = do_genai.list_opensearch_databases()
+        
+        return databases
+    
     @app.route('/api/buckets', methods=['POST'])
     @handle_response
     def create_bucket():

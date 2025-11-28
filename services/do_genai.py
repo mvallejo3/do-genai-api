@@ -23,6 +23,7 @@ class DigitalOceanGenAI:
     - Models
     - API Keys
     - Indexing Jobs
+    - Databases (OpenSearch)
     """
     
     def __init__(self, api_token: Optional[str] = None):
@@ -1016,6 +1017,42 @@ class DigitalOceanGenAI:
             Dictionary containing list of regions
         """
         response = self.client.genai.list_datacenter_regions()
+        return response
+    
+    # ==================== Database Methods ====================
+    
+    def list_opensearch_databases(self) -> JSON:
+        """
+        List all OpenSearch databases from DigitalOcean.
+        
+        Returns:
+            Dictionary containing list of OpenSearch databases
+        """
+        response = self.client.databases.list_clusters()
+        
+        # Filter to only return OpenSearch databases
+        if 'databases' in response:
+            opensearch_databases = [
+                db for db in response['databases']
+                if db.get('engine', '').lower() == 'opensearch'
+            ]
+            return {
+                'databases': opensearch_databases,
+                'count': len(opensearch_databases)
+            }
+        
+        # If response structure is different, return as-is but filter
+        if isinstance(response, list):
+            opensearch_databases = [
+                db for db in response
+                if db.get('engine', '').lower() == 'opensearch'
+            ]
+            return {
+                'databases': opensearch_databases,
+                'count': len(opensearch_databases)
+            }
+        
+        # Return filtered response
         return response
     
     # ==================== API Key Methods ====================
