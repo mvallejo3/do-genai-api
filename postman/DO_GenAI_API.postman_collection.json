@@ -155,6 +155,122 @@
 			"name": "Knowledge Base",
 			"item": [
 				{
+					"name": "List Knowledge Bases",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/knowledgebase",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"knowledgebase"
+							]
+						},
+						"description": "List all knowledge bases from DigitalOcean"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Knowledge Base",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My Knowledge Base\",\n    \"description\": \"A knowledge base for storing documents\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/knowledgebase",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"knowledgebase"
+							]
+						},
+						"description": "Create a new knowledge base in DigitalOcean"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Knowledge Base",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/knowledgebase/{{KNOWLEDGE_BASE_UUID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"knowledgebase",
+								"{{KNOWLEDGE_BASE_UUID}}"
+							]
+						},
+						"description": "Get a specific knowledge base by ID/UUID from DigitalOcean"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Knowledge Base",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/knowledgebase/{{KNOWLEDGE_BASE_UUID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"knowledgebase",
+								"{{KNOWLEDGE_BASE_UUID}}"
+							]
+						},
+						"description": "Delete a knowledge base from DigitalOcean"
+					},
+					"response": []
+				},
+				{
 					"name": "Re-index Knowledge Base",
 					"request": {
 						"method": "POST",
@@ -383,6 +499,47 @@
 						"description": "Create a new API key for a specific AI Agent"
 					},
 					"response": []
+				},
+				{
+					"name": "Attach Knowledge Base to Agent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"knowledge_base_uuid\": \"{{KNOWLEDGE_BASE_UUID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/agents/{{AGENT_ID}}/attach-knowledgebase",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"agents",
+								"{{AGENT_ID}}",
+								"attach-knowledgebase"
+							]
+						},
+						"description": "Attach a knowledge base to an agent"
+					},
+					"response": []
 				}
 			],
 			"description": "AI Agent management endpoints"
@@ -553,6 +710,37 @@
 				}
 			],
 			"description": "DigitalOcean Spaces bucket management endpoints"
+		},
+		{
+			"name": "Databases",
+			"item": [
+				{
+					"name": "List OpenSearch Databases",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{API_BEARER_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/opensearch-databases",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"opensearch-databases"
+							]
+						},
+						"description": "List all OpenSearch databases from DigitalOcean"
+					},
+					"response": []
+				}
+			],
+			"description": "OpenSearch database management endpoints"
 		}
 	],
 	"variable": [
