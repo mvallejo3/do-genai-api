@@ -35,7 +35,7 @@ class Workspaces(DigitalOceanAPI):
         response = self.client.genai.create_workspace(body=body)
         return response
     
-    def get_workspace(self, workspace_uuid: str = None) -> JSON:
+    def get_workspace(self, workspace_uuid: Optional[str] = None) -> JSON:
         """
         Retrieve an existing workspace.
         
@@ -63,7 +63,7 @@ class Workspaces(DigitalOceanAPI):
     
     def update_workspace(
         self,
-        workspace_uuid: str = None,
+        workspace_uuid: Optional[str] = None,
         name: Optional[str] = None,
         description: Optional[str] = None
     ) -> JSON:
@@ -93,7 +93,7 @@ class Workspaces(DigitalOceanAPI):
         )
         return response
     
-    def delete_workspace(self, workspace_uuid: str = None) -> JSON:
+    def delete_workspace(self, workspace_uuid: Optional[str] = None) -> JSON:
         """
         Delete a workspace.
         

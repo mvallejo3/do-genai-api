@@ -125,7 +125,7 @@ class APIKeys(DigitalOceanAPI):
     def create_model_api_key(
         self,
         name: str,
-        model_uuid: str = None
+        model_uuid: Optional[str] = None
     ) -> JSON:
         """
         Create an API key for a model.

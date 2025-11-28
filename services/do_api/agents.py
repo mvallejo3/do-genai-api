@@ -16,9 +16,9 @@ class Agents(DigitalOceanAPI):
     def create_agent(
         self,
         name: str,
-        model_uuid: str = None,
-        workspace_uuid: str = None,
-        region: str = None,
+        model_uuid: Optional[str] = None,
+        workspace_uuid: Optional[str] = None,
+        region: Optional[str] = None,
         description: Optional[str] = None,
         instructions: Optional[str] = None,
         project_id: Optional[str] = None,
@@ -413,7 +413,7 @@ class Agents(DigitalOceanAPI):
     def update_agents_workspace(
         self,
         agent_uuids: List[str],
-        workspace_uuid: str = None
+        workspace_uuid: Optional[str] = None
     ) -> JSON:
         """
         Move agents to a different workspace.
