@@ -1,6 +1,6 @@
 # DO GenAI API
 
-A Flask-based REST API that provides an interface to DigitalOcean's GenAI services. This API enables you to manage AI agents, upload files to DigitalOcean Spaces for knowledge bases, re-index knowledge bases, interact with available models, and more.
+A Flask-based REST API that provides an interface to DigitalOcean's AI services. This API enables you to manage AI agents, upload files to DigitalOcean Spaces for knowledge bases, re-index knowledge bases, interact with available models, and more.
 
 **NOTE:** Currently in active development. There will be more features and functionality added soon.
 
