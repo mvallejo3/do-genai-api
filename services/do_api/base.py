@@ -1,5 +1,5 @@
 """
-Base class for DigitalOcean GenAI API services.
+Base class for DigitalOcean AI API services.
 """
 
 import os
@@ -9,7 +9,7 @@ from pydo import Client
 
 class DigitalOceanAPI:
     """
-    Base class for DigitalOcean GenAI API services.
+    Base class for DigitalOcean AI API services.
     
     Provides shared functionality including:
     - API client initialization
@@ -24,7 +24,7 @@ class DigitalOceanAPI:
     
     def __init__(self, api_token: Optional[str] = None):
         """
-        Initialize DigitalOcean GenAI client.
+        Initialize DigitalOcean AI client.
         
         Args:
             api_token: DigitalOcean API token (defaults to DIGITALOCEAN_API_TOKEN env var)

@@ -1,8 +1,8 @@
 {
 	"info": {
 		"_postman_id": "do-genai-api-collection",
-		"name": "DO GenAI API",
-		"description": "Postman collection for DigitalOcean GenAI API endpoints",
+		"name": "DO AI API",
+		"description": "Postman collection for DigitalOcean AI API endpoints",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -582,7 +582,7 @@
 								}
 							]
 						},
-						"description": "List available models from DigitalOcean GenAI"
+						"description": "List available models from DigitalOcean AI"
 					},
 					"response": []
 				}

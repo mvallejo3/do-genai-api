@@ -1,4 +1,4 @@
 """
-Services module for DO GenAI API application.
+Services module for DO AI API application.
 """
 

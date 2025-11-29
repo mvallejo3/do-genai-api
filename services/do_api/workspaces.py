@@ -1,5 +1,5 @@
 """
-Workspaces service for managing DigitalOcean GenAI workspaces.
+Workspaces service for managing DigitalOcean AI workspaces.
 """
 
 from typing import Optional
@@ -11,7 +11,7 @@ JSON = MutableMapping[str, Any]
 
 
 class Workspaces(DigitalOceanAPI):
-    """Service class for managing DigitalOcean GenAI workspaces."""
+    """Service class for managing DigitalOcean AI workspaces."""
     
     def create_workspace(
         self,

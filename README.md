@@ -1,4 +1,4 @@
-# DO GenAI API
+# DO AI API
 
 A Flask-based REST API that provides an interface to DigitalOcean's AI services. This API enables you to manage AI agents, upload files to DigitalOcean Spaces for knowledge bases, re-index knowledge bases, interact with available models, and more.
 
@@ -6,12 +6,12 @@ A Flask-based REST API that provides an interface to DigitalOcean's AI services.
 
 ## Description
 
-The DO GenAI API is a middleware service that simplifies interaction with DigitalOcean's GenAI platform. It provides RESTful endpoints for:
+The DO AI API is a middleware service that simplifies interaction with DigitalOcean's AI platform. It provides RESTful endpoints for:
 
 - **Agent Management**: Create, list, retrieve, delete AI agents, manage API keys, and attach knowledge bases
 - **File Management**: Upload, list, and delete files in DigitalOcean Spaces (used for knowledge base storage)
 - **Knowledge Base Operations**: Create, list, retrieve, delete knowledge bases, and trigger re-indexing jobs
-- **Model Discovery**: List available AI models from DigitalOcean GenAI
+- **Model Discovery**: List available AI models from DigitalOcean AI
 - **Bucket Management**: Create, list, retrieve, and delete DigitalOcean Spaces buckets
 - **Database Management**: List OpenSearch databases from DigitalOcean
 
@@ -20,7 +20,7 @@ All API endpoints require Bearer token authentication for security.
 ## Prerequisites
 
 - Python 3.10 or higher
-- DigitalOcean account with GenAI access
+- DigitalOcean account with AI access
 - DigitalOcean Spaces bucket (file storage to use for Knowledge bases)
 - DigitalOcean API token
 - DigitalOcean Spaces Access Key & Secret
@@ -99,7 +99,7 @@ Response:
 ```json
 {
   "status": "ok",
-  "message": "DO GenAI API is running"
+  "message": "DO AI API is running"
 }
 ```
 
@@ -411,7 +411,7 @@ do-genai-api/
 │   └── buckets.py              # Bucket routes (/api/buckets)
 ├── services/                   # Business logic and external API clients
 │   ├── __init__.py
-│   ├── do_api/                 # DigitalOcean GenAI API services
+│   ├── do_api/                 # DigitalOcean AI API services
 │   │   ├── __init__.py
 │   │   ├── base.py             # Base API client
 │   │   ├── agents.py           # Agent service

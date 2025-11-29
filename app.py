@@ -1,5 +1,5 @@
 """
-Main application entry point for DO GenAI API.
+Main application entry point for DO AI API.
 """
 import os
 from dotenv import load_dotenv

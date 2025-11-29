@@ -1,5 +1,5 @@
 """
-Knowledge Bases service for managing DigitalOcean GenAI knowledge bases.
+Knowledge Bases service for managing DigitalOcean AI knowledge bases.
 """
 
 from typing import Optional, List
@@ -11,7 +11,7 @@ JSON = MutableMapping[str, Any]
 
 
 class KnowledgeBases(DigitalOceanAPI):
-    """Service class for managing DigitalOcean GenAI knowledge bases."""
+    """Service class for managing DigitalOcean AI knowledge bases."""
     
     def create_knowledge_base(
         self,

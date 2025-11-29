@@ -1,7 +1,7 @@
 """
-DigitalOcean GenAI API services package.
+DigitalOcean AI API services package.
 
-This package provides modular service classes for managing DigitalOcean GenAI resources.
+This package provides modular service classes for managing DigitalOcean AI resources.
 """
 
 from .base import DigitalOceanAPI

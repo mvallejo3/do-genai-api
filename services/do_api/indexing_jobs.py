@@ -1,5 +1,5 @@
 """
-Indexing Jobs service for managing DigitalOcean GenAI indexing jobs.
+Indexing Jobs service for managing DigitalOcean AI indexing jobs.
 """
 
 from typing import Optional, List
@@ -11,7 +11,7 @@ JSON = MutableMapping[str, Any]
 
 
 class IndexingJobs(DigitalOceanAPI):
-    """Service class for managing DigitalOcean GenAI indexing jobs."""
+    """Service class for managing DigitalOcean AI indexing jobs."""
     
     def create_indexing_job(
         self,

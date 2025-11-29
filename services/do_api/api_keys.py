@@ -1,5 +1,5 @@
 """
-API Keys service for managing DigitalOcean GenAI API keys.
+API Keys service for managing DigitalOcean AI API keys.
 """
 
 from typing import Optional
@@ -11,7 +11,7 @@ JSON = MutableMapping[str, Any]
 
 
 class APIKeys(DigitalOceanAPI):
-    """Service class for managing DigitalOcean GenAI API keys."""
+    """Service class for managing DigitalOcean AI API keys."""
     
     # Agent API Keys
     

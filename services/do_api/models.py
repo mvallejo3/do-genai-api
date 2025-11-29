@@ -1,5 +1,5 @@
 """
-Models service for managing DigitalOcean GenAI models.
+Models service for managing DigitalOcean AI models.
 """
 
 from typing import Optional, List
@@ -11,7 +11,7 @@ JSON = MutableMapping[str, Any]
 
 
 class Models(DigitalOceanAPI):
-    """Service class for managing DigitalOcean GenAI models."""
+    """Service class for managing DigitalOcean AI models."""
     
     def list_models(
         self,

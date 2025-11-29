@@ -1,5 +1,5 @@
 """
-Agents service for managing DigitalOcean GenAI agents.
+Agents service for managing DigitalOcean AI agents.
 """
 
 from typing import Optional, List
@@ -11,7 +11,7 @@ JSON = MutableMapping[str, Any]
 
 
 class Agents(DigitalOceanAPI):
-    """Service class for managing DigitalOcean GenAI agents."""
+    """Service class for managing DigitalOcean AI agents."""
     
     def create_agent(
         self,

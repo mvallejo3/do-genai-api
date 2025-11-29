@@ -12,7 +12,7 @@ models_bp = Blueprint('models', __name__, url_prefix='/api/models')
 @handle_response
 def list_models():
     """
-    List available models from DigitalOcean GenAI.
+    List available models from DigitalOcean AI.
     
     Query parameters:
         usecases (str, optional): Comma-separated list of use cases to filter by
