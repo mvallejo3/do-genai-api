@@ -31,6 +31,15 @@ def create_knowledge_base():
     Request body (JSON):
         name (str, required): Name of the knowledge base
         description (str, optional): Description of the knowledge base
+        project_id (str, optional): Project UUID
+        embedding_model_uuid (str, optional): Embedding model UUID
+        database_id (str, optional): Database UUID
+        datasources (list, optional): List of data source configurations
+            Each datasource can contain:
+                spaces_data_source (dict): Spaces data source configuration
+                    bucket_name (str, required): Name of the Spaces bucket
+                    item_path (str, optional): Path within the bucket (empty for root)
+                    region (str, optional): Region for the Spaces bucket
     
     Returns:
         JSON response with the created knowledge base details
@@ -42,15 +51,37 @@ def create_knowledge_base():
     
     name = data.get('name')
     description = data.get('description', '')
+    project_id = data.get('project_id')
+    embedding_model_uuid = data.get('embedding_model_uuid')
+    database_id = data.get('database_id')
+    datasources = data.get('datasources')
     
     # Validate required field
     if not name or not isinstance(name, str) or not name.strip():
         raise ValueError("Knowledge base name is required and cannot be empty")
     
+    # Validate datasources if provided
+    if datasources is not None:
+        if not isinstance(datasources, list):
+            raise ValueError("datasources must be a list")
+        for ds in datasources:
+            if not isinstance(ds, dict):
+                raise ValueError("Each datasource must be a dictionary")
+            if 'spaces_data_source' in ds:
+                spaces_ds = ds['spaces_data_source']
+                if not isinstance(spaces_ds, dict):
+                    raise ValueError("spaces_data_source must be a dictionary")
+                if 'bucket_name' not in spaces_ds or not spaces_ds['bucket_name']:
+                    raise ValueError("bucket_name is required in spaces_data_source")
+    
     kb_service = KnowledgeBases()
     result = kb_service.create_knowledge_base(
         name=name,
-        description=description if description else None
+        description=description if description else None,
+        project_id=project_id,
+        embedding_model_uuid=embedding_model_uuid,
+        database_id=database_id,
+        datasources=datasources
     )
     
     if not result:

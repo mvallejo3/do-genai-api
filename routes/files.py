@@ -24,10 +24,16 @@ def list_files():
     Returns:
         JSON response with list of files and their metadata
     """
+    bucket_name = request.args.get('bucket_name') or request.args.get('bucket')
     prefix = request.args.get('prefix', '')
     max_keys = request.args.get('max_keys', type=int)
     
-    kb = Spaces()
+    # Initialize Spaces with bucket_name if provided
+    if bucket_name:
+        kb = Spaces(bucket_name=bucket_name)
+    else:
+        kb = Spaces()
+    
     files = kb.list_files(prefix=prefix, max_keys=max_keys)
     
     return {
@@ -67,8 +73,14 @@ def upload_file():
     # Get optional folder parameter
     folder = request.args.get('folder', '')
     
-    # Initialize KnowledgeBase
-    kb = Spaces()
+    # Get optional bucket_name parameter
+    bucket_name = request.args.get('bucket_name') or request.args.get('bucket')
+    
+    # Initialize KnowledgeBase with bucket_name if provided
+    if bucket_name:
+        kb = Spaces(bucket_name=bucket_name)
+    else:
+        kb = Spaces()
     
     # Track temporary files for cleanup
     temp_paths = []
@@ -161,7 +173,15 @@ def delete_file():
     if not isinstance(key, str) or not key.strip():
         raise ValueError("Key cannot be empty")
     
-    kb = Spaces()
+    # Get optional bucket_name parameter
+    bucket_name = request.args.get('bucket_name') or request.args.get('bucket')
+    
+    # Initialize Spaces with bucket_name if provided
+    if bucket_name:
+        kb = Spaces(bucket_name=bucket_name)
+    else:
+        kb = Spaces()
+    
     kb.delete_file(key)
     
     return {

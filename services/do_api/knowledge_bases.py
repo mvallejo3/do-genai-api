@@ -2,7 +2,7 @@
 Knowledge Bases service for managing DigitalOcean AI knowledge bases.
 """
 
-from typing import Optional, List
+from typing import Optional, List, Dict
 from typing import MutableMapping, Any
 
 from .base import DigitalOceanAPI
@@ -17,6 +17,10 @@ class KnowledgeBases(DigitalOceanAPI):
         self,
         name: str,
         description: Optional[str] = None,
+        project_id: Optional[str] = None,
+        embedding_model_uuid: Optional[str] = None,
+        database_id: Optional[str] = None,
+        datasources: Optional[List[dict]] = None,
         **kwargs
     ) -> JSON:
         """
@@ -25,25 +29,35 @@ class KnowledgeBases(DigitalOceanAPI):
         Args:
             name: Name of the knowledge base
             description: Optional description
+            project_id: Optional project UUID (defaults to DEFAULT_PROJECT_UUID)
+            embedding_model_uuid: Optional embedding model UUID (defaults to hardcoded value)
+            database_id: Optional database UUID (defaults to hardcoded value)
+            datasources: Optional list of data source configurations (defaults to hardcoded Spaces config)
             **kwargs: Additional knowledge base configuration options
         
         Returns:
             Dictionary containing knowledge base details
         """
-        body = {
+        body: Dict[str, Any] = {
             "name": name,
-            "project_id": self.DEFAULT_PROJECT_UUID,
-            "embedding_model_uuid": "22652c2a-79ed-11ef-bf8f-4e013e2ddde4",
-            "database_id": "eb400988-68af-4ad6-ad15-ab91b7e85625",
-            "datasources": [{
+            "project_id": project_id if project_id is not None else self.DEFAULT_PROJECT_UUID,
+            "embedding_model_uuid": embedding_model_uuid if embedding_model_uuid is not None else "22652c2a-79ed-11ef-bf8f-4e013e2ddde4",
+            "database_id": database_id if database_id is not None else "eb400988-68af-4ad6-ad15-ab91b7e85625",
+        }
+        
+        if description:
+            body["description"] = description
+        
+        # Handle datasources - use provided or default
+        if datasources is not None:
+            body["datasources"] = datasources
+        else:
+            body["datasources"] = [{
                 "spaces_data_source": {
                     "bucket_name": 'roami-bot',
                     "region": self.DEFAULT_REGION
                 }
             }]
-        }
-        if description:
-            body["description"] = description
         
         body.update(kwargs)
         
