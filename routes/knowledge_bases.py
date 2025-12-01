@@ -80,6 +80,12 @@ def get_knowledge_base(id):
     if not knowledge_base:
         raise ValueError(f"Knowledge base with ID '{id}' not found")
     
+    data_sources = kb_service.list_knowledge_base_data_sources(knowledge_base_uuid=id)
+    if not data_sources:
+        raise ValueError(f"Data sources not found for knowledge base with ID '{id}'")
+    
+    knowledge_base['data_sources'] = data_sources['knowledge_base_data_sources']
+    
     return knowledge_base
 
 
@@ -107,6 +113,26 @@ def delete_knowledge_base(id):
     
     response = kb_service.delete_knowledge_base(id)
     return response
+
+
+@knowledge_bases_bp.route('/<id>/datasources', methods=['GET'])
+@handle_response
+def list_data_sources(id):
+    """
+    Get a specific data source by UUID from DigitalOcean.
+    
+    Path parameters:
+        id (str, required): The ID/UUID of the knowledge base to retrieve
+    
+    Returns:
+        JSON response with data source details
+    """
+    if not id or not isinstance(id, str) or not id.strip():
+        raise ValueError("Knowledge base ID cannot be empty")
+    
+    kb_service = KnowledgeBases()
+    data_sources = kb_service.list_knowledge_base_data_sources(knowledge_base_uuid=id)
+    return data_sources
 
 
 @knowledge_bases_bp.route('/reindex', methods=['POST'])
